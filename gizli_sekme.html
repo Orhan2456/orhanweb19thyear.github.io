@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gizli Sekme - Orhan WEB</title>
+  <style>
+    /* --- GİZLİ SEKME (CHROME + BRAVE) CSS --- */
+    :root {
+      --bg-dark: #202124; /* Chrome Gizli Sekme Arka Planı */
+      --bg-card: #292a2d;
+      --text-main: #e8eaed;
+      --text-muted: #9aa0a6;
+      --brave-orange: #fb542b;
+      --brave-purple: #8b5cf6;
+      --border-dark: #3c4043;
+      --shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Üst Bar (Brave Tarzı Gradyan Çizgi) */
+    .top-bar {
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--brave-orange), var(--brave-purple));
+    }
+
+    /* Ana Konteyner */
+    .container {
+      flex: 1;
+      width: 100%;
+      max-width: 750px;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 15vh;
+      transition: var(--transition);
+    }
+
+    /* Arama yapıldığında tepeye kayma animasyonu */
+    .container.search-active {
+      margin-top: 5vh;
+    }
+    
+    .container.search-active .incognito-info {
+      display: none; /* Arama yapıldığında bilgi yazısını gizle */
+    }
+
+    /* Gizli Sekme Bilgi Alanı (Chrome Tarzı) */
+    .incognito-info {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Brave Tarzı Maske / Gizlilik İkonu */
+    .incognito-icon {
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .incognito-icon svg {
+      width: 80px;
+      height: 80px;
+      fill: none;
+      stroke: url(#braveGradient);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .incognito-info h1 {
+      font-size: 2.2rem;
+      font-weight: 400;
+      margin-bottom: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .incognito-info p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto 25px auto;
+    }
+
+    .privacy-list {
+      text-align: left;
+      background: var(--bg-card);
+      padding: 20px 30px;
+      border-radius: 8px;
+      border: 1px solid var(--border-dark);
+      display: inline-block;
+    }
+
+    .privacy-list li {
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .privacy-list li::before {
+      content: '✓';
+      color: var(--brave-purple);
+      font-weight: bold;
+    }
+
+    .privacy-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Arama Alanı */
+    .search-box {
+      width: 100%;
+      max-width: 650px;
+      position: relative;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-dark);
+      border-radius: 24px;
+      padding: 5px 20px;
+      transition: var(--transition);
+    }
+
+    .input-wrapper:focus-within {
+      background: var(--bg-card);
+      border-color: var(--brave-purple);
+      box-shadow: 0 0 0 1px var(--brave-purple);
+    }
+
+    .search-icon {
+      color: var(--text-muted);
+      margin-right: 10px;
+      display: flex;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 12px 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 1.1rem;
+    }
+
+    #searchInput::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Öneriler */
+    #suggestions {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dark);
+      border-radius: 12px;
+      margin-top: 5px;
+      position: absolute;
+      width: 100%;
+      z-index: 10;
+      box-shadow: var(--shadow-dark);
+      overflow: hidden;
+      display: none;
+    }
+
+    #suggestions.active {
+      display: block;
+    }
+
+    .suggestion-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .suggestion-item:hover {
+      background: #35363a;
+    }
+
+    .suggestion-item svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--text-muted);
+    }
+
+    /* Sonuç Kartları (Dark Mode) */
+    #results {
+      margin-top: 30px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .info-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dark);
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .info-box h2 {
+      margin: 0;
+      font-size: 1.6rem;
+      color: #fff;
+    }
+
+    .info-box img {
+      width: 100%;
+      max-width: 200px;
+      border-radius: 8px;
+    }
+
+    .info-content p {
+      color: #bdc1c6;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .result {
+      background: var(--bg-card);
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border-dark);
+    }
+
+    .result p {
+      color: #bdc1c6;
+      line-height: 1.5;
+    }
+
+    .result a, .info-box a {
+      color: #8ab4f8; /* Google Dark Mode Link Rengi */
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .result a:hover, .info-box a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: auto;
+      border-top: 1px solid var(--border-dark);
+    }
+
+    @media (min-width: 600px) {
+      .info-box.has-image {
+        grid-template-columns: auto 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .incognito-info h1 { font-size: 1.8rem; }
+      .container { margin-top: 8vh; }
+      .privacy-list { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <div class="container" id="mainContainer">
+    
+    <!-- Gizli Sekme Bilgi Ekranı -->
+    <div class="incognito-info" id="incognitoInfo">
+      <div class="incognito-icon">
+        <svg viewBox="0 0 24 24">
+          <defs>
+            <linearGradient id="braveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#fb542b" />
+              <stop offset="100%" stop-color="#8b5cf6" />
+            </linearGradient>
+          </defs>
+          <!-- Gözlük ve Şapka İkonu (Gizlilik) -->
+          <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+          <path d="M12 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/>
+          <path d="M15.5 13c-1.93 0-3.5 1.57-3.5 3.5S13.57 20 15.5 20 19 18.43 19 16.5 17.43 13 15.5 13zm-7 0C6.57 13 5 14.57 5 16.5S6.57 20 8.5 20 12 18.43 12 16.5 10.43 13 8.5 13z"/>
+        </svg>
+      </div>
+      <h1>Gizli Moddasınız</h1>
+      <p>Orhan WEB bu pencereyi kapattığınızda arama verilerinizi cihazınızda saklamaz. Tamamen izole bir şekilde arama yapabilirsiniz.</p>
+      
+      <div class="privacy-list">
+        <ul>
+          <li>Arama geçmişi tarayıcınıza <strong>kaydedilmez</strong>.</li>
+          <li>Çerezler ve site verileri oluşturulmaz.</li>
+          <li>Sonuçlar cihazınızdan bağımsız, anonim olarak çekilir.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Arama Çubuğu -->
+    <div class="search-box">
+      <div class="input-wrapper">
+        <div class="search-icon">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+        </div>
+        <input type="text" id="searchInput" placeholder="Gizli arama yapın veya bir URL girin" autocomplete="off"/>
+      </div>
+      <div id="suggestions"></div>
+    </div>
+
+    <div id="results"></div>
+  </div>
+
+  <footer>
+    Orhan WEB - Private Engine
+  </footer>
+
+  <script>
+    /* --- GİZLİ SEKME JAVASCRIPT BAŞLANGICI --- */
+    const searchInput = document.getElementById("searchInput");
+    const suggestionsDiv = document.getElementById("suggestions");
+    const mainContainer = document.getElementById("mainContainer");
+    let debounceTimer;
+
+    // Tuş dinleme
+    searchInput.addEventListener("keyup", function(e) {
+      if (e.key === "Enter") {
+        clearTimeout(debounceTimer);
+        suggestionsDiv.classList.remove("active");
+        search();
+      } else {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          getSuggestions();
+        }, 300);
+      }
+    });
+
+    // Dışarı tıklanınca önerileri kapat
+    document.addEventListener("click", function(e) {
+      if (!e.target.closest('.search-box')) {
+        suggestionsDiv.classList.remove("active");
+      }
+    });
+
+    async function search() {
+      const query = searchInput.value.trim();
+      const resultsDiv = document.getElementById("results");
+
+      if (!query) return;
+
+      // Gizli sekme yazısını gizle ve arama çubuğunu yukarı al
+      mainContainer.classList.add("search-active");
+
+      resultsDiv.innerHTML = `
+        <div style="text-align: center; color: var(--text-muted); padding: 40px;">
+          <p>Gizli ağda aranıyor...</p>
+        </div>
+      `;
+      suggestionsDiv.classList.remove("active");
+
+      // DİKKAT: Gizli sekme olduğu için localStorage'a (Geçmişe) KAYIT YAPILMIYOR.
+      // saveToHistory(query); iptal edildi.
+
+      try {
+        // Wikipedia API
+        const wikiRes = await fetch(`https://tr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+        const wikiData = await wikiRes.json();
+
+        // DuckDuckGo API (Daha gizlilik odaklı bir API)
+        const ddgRes = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1`);
+        const ddgData = await ddgRes.json();
+
+        resultsDiv.innerHTML = "";
+
+        // Wikipedia Sonucu
+        if (wikiData.extract && wikiData.title !== "Not found.") {
+          const infoBox = document.createElement("div");
+          const hasImage = wikiData.thumbnail ? "has-image" : "";
+          infoBox.className = `info-box ${hasImage}`;
+          
+          let imgHTML = wikiData.thumbnail ? `<div><img src="${wikiData.thumbnail.source}" alt="Görsel" /></div>` : "";
+          
+          infoBox.innerHTML = `
+            ${imgHTML}
+            <div class="info-content">
+              <h2>${wikiData.title}</h2>
+              <p>${wikiData.extract}</p>
+              <a href="${wikiData.content_urls.desktop.page}" target="_blank">Wikipedia'da aç →</a>
+            </div>
+          `;
+          resultsDiv.appendChild(infoBox);
+        }
+
+        // DuckDuckGo Sonuçları
+        let foundLinks = false;
+        if (ddgData.RelatedTopics && ddgData.RelatedTopics.length > 0) {
+          ddgData.RelatedTopics.forEach(item => {
+            if (item.Text && item.FirstURL) {
+              foundLinks = true;
+              const div = document.createElement("div");
+              div.className = "result";
+              div.innerHTML = `
+                <p>${item.Text}</p>
+                <a href="${item.FirstURL}" target="_blank" rel="noopener noreferrer">Ziyaret Et (Güvenli Bağlantı)</a>
+              `;
+              resultsDiv.appendChild(div);
+            }
+          });
+        } 
+        
+        // Sonuç Yoksa
+        if (!wikiData.extract && !foundLinks) {
+          resultsDiv.innerHTML = `
+            <div style="text-align: center; padding: 40px; border-radius: 8px; border: 1px solid var(--border-dark);">
+              <h3 style="color: #fff; margin-bottom: 8px;">Sonuç bulunamadı</h3>
+              <p style="color: var(--text-muted);">Bununla ilgili güvenli ağda bir veri eşleşmedi.</p>
+            </div>
+          `;
+        }
+
+      } catch (error) {
+        resultsDiv.innerHTML = `
+          <div style="text-align: center; padding: 40px; border: 1px solid #d93025; border-radius: 8px;">
+            <h3 style="color: #f28b82;">Bağlantı Hatası</h3>
+            <p style="color: var(--text-muted);">İnternet bağlantınızı kontrol edin.</p>
+          </div>
+        `;
+      }
+    }
+
+    async function getSuggestions() {
+      const query = searchInput.value.trim();
+
+      if (query.length < 2) {
+        suggestionsDiv.classList.remove("active");
+        setTimeout(() => suggestionsDiv.innerHTML = "", 200);
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://tr.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=5&namespace=0&format=json&origin=*`);
+        const data = await res.json();
+        const suggestions = data[1];
+
+        if (suggestions.length > 0) {
+          suggestionsDiv.innerHTML = "";
+          suggestions.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "suggestion-item";
+            div.innerHTML = `
+              <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              ${item}
+            `;
+            div.onclick = () => {
+              searchInput.value = item;
+              suggestionsDiv.classList.remove("active");
+              search();
+            };
+            suggestionsDiv.appendChild(div);
+          });
+          suggestionsDiv.classList.add("active");
+        } else {
+          suggestionsDiv.classList.remove("active");
+        }
+      } catch (err) {
+        console.error("Öneri hatası:", err);
+      }
+    }
+  </script>
+</body>
+</html>
