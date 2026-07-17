@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <!-- Bu etiket mobil uyumluluğun kalbidir -->
+  <!-- Bu etiket mobil uyumluluğun kalbidir (Telefonda zoom yapmayı engeller) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Orhan WEB 19ThYear</title>
   <style>
@@ -491,10 +491,13 @@
 
     @media (max-width: 480px) {
       .top-nav { right: 15px; top: 15px; }
+      /* Mobil için menü taşmasını önleyen ayar */
       .apps-menu { right: -10px; width: 200px; }
       .container { margin-top: 8vh; padding: 0 15px; }
       .logo-text { font-size: 2.2rem; }
+      /* Mobilde zoom yapmayı engellemek için font boyutu 16px */
       #searchInput { padding: 14px 45px 14px 20px; font-size: 16px; }
+      /* Mobilde butonlar alt alta dizilir */
       .button-group { flex-direction: column; gap: 10px; }
       button { width: 100%; padding: 14px; }
       .info-box, .result { padding: 15px; }
