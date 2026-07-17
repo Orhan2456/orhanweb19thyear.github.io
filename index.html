@@ -237,7 +237,9 @@
     /* --- YENİ EKLENEN MİKROFON BUTONU --- */
     .mic-btn {
       position: absolute;
-      right: 15px;
+      right: 20px; /* Sağa daha yakın ve dengeli olması için 20px yaptık */
+      top: 50%;
+      transform: translateY(-50%);
       background: transparent;
       border: none;
       cursor: pointer;
@@ -247,6 +249,7 @@
       padding: 5px;
       border-radius: 50%;
       transition: background 0.2s;
+      z-index: 5; /* Input'un üzerinde kalması için */
     }
 
     .mic-btn svg {
